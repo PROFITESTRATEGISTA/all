@@ -1,3 +1,6 @@
+import Stripe from "stripe";
+import { CheckoutSessionRequest } from "@/types/payment";
+
 /**
  * API handler for creating a Stripe checkout session
  * This would be deployed as a serverless function
@@ -8,14 +11,15 @@ export const createCheckoutSession = async (req: any, res: any) => {
   }
 
   try {
-    const { priceId, mode = "subscription" } = req.body;
+    const { priceId, mode = "subscription" } =
+      req.body as CheckoutSessionRequest;
 
     if (!priceId) {
       return res.status(400).json({ error: "Price ID is required" });
     }
 
     // Initialize Stripe
-    const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
@@ -26,8 +30,8 @@ export const createCheckoutSession = async (req: any, res: any) => {
           quantity: 1,
         },
       ],
-      mode,
-      success_url: `${req.headers.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      mode: mode,
+      success_url: `${req.headers.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}&payment_link_id=${priceId}`,
       cancel_url: `${req.headers.origin}/payment-cancelled`,
       metadata: {
         payment_link_id: priceId,

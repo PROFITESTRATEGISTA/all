@@ -1,47 +1,62 @@
 import { Handler } from "@netlify/functions";
-import { createCheckoutSession } from "../../src/api/create-checkout-session";
+import Stripe from "stripe";
 
 /**
  * Netlify serverless function to create a Stripe checkout session
  */
 export const handler: Handler = async (event, context) => {
-  // Convert Netlify event to Express-like request object
-  const req = {
-    method: event.httpMethod,
-    body: JSON.parse(event.body || "{}"),
-    headers: event.headers,
-  };
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: "Method not allowed" }),
+    };
+  }
 
-  // Create Express-like response object
-  let statusCode = 200;
-  let responseBody = {};
+  try {
+    const { priceId, mode = "subscription" } = JSON.parse(event.body || "{}");
 
-  const res = {
-    status: (code: number) => {
-      statusCode = code;
-      return res;
-    },
-    json: (body: any) => {
-      responseBody = body;
-      return res;
-    },
-    send: (body: string) => {
-      responseBody = { message: body };
-      return res;
-    },
-    setHeader: () => res, // No-op for this implementation
-    end: () => res, // No-op for this implementation
-  };
+    if (!priceId) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Price ID is required" }),
+      };
+    }
 
-  // Process the request
-  await createCheckoutSession(req, res);
+    // Initialize Stripe
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
-  // Return the response
-  return {
-    statusCode,
-    body: JSON.stringify(responseBody),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
+    // Create checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      mode: mode as "subscription" | "payment",
+      success_url: `${event.headers.origin || event.headers.host}/payment-success?session_id={CHECKOUT_SESSION_ID}&payment_link_id=${priceId}`,
+      cancel_url: `${event.headers.origin || event.headers.host}/payment-cancelled`,
+      metadata: {
+        payment_link_id: priceId,
+      },
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ sessionId: session.id }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+  } catch (error: any) {
+    console.error("Error creating checkout session:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+  }
 };

@@ -4,10 +4,10 @@ import { PAYMENT_LINKS } from "./stripe";
 /**
  * Handles payment processing and user membership management
  * @param email User's email address
- * @param paymentLinkId The Stripe payment link ID used for the purchase
+ * @param paymentLinkId The payment link ID used for the purchase
  * @returns Result of the operation
  */
-import { PaymentResult, PaymentEvent, MembershipUpdate } from "@/types/payment";
+import { PaymentResult, PaymentEvent } from "@/types/payment";
 
 export const handlePayment = async (
   email: string,
@@ -178,12 +178,6 @@ export const handlePayment = async (
   }
 };
 
-/**
- * Checks if a user has access to a specific feature based on their membership
- * @param userId User ID
- * @param feature Feature name to check access for
- * @returns Boolean indicating if user has access
- */
 /**
  * Records a payment event in the database
  * @param event Payment event details

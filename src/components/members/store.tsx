@@ -22,6 +22,7 @@ import {
   Users,
   BookOpen,
   Mail,
+  Calendar as CalendarIcon,
 } from "lucide-react";
 import PaymentButton from "@/components/members/payment-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -55,7 +56,7 @@ export default function MembersStore() {
         "Filtros de volatilidade",
         "Compatível com múltiplos ativos",
       ],
-      stripeLink: "https://buy.stripe.com/00g4jI4pF7Yp3G8wA",
+      paymentLink: "https://buy.stripe.com/00g4jI4pF7Yp3G8wA",
       notIncludedInPro: true,
     },
     {
@@ -73,7 +74,7 @@ export default function MembersStore() {
         "Relatórios detalhados de performance",
         "Configuração personalizada de risco",
       ],
-      stripeLink: "https://profitestrategista.rds.land",
+      paymentLink: "https://profitestrategista.rds.land",
       notIncludedInPro: true,
     },
     {
@@ -92,7 +93,7 @@ export default function MembersStore() {
         "Suporte técnico especializado",
         "Backup automático diário",
       ],
-      stripeLink: "https://wa.me/5511999999999",
+      paymentLink: "https://wa.me/5511999999999",
       notIncludedInPro: true,
     },
     {
@@ -110,7 +111,7 @@ export default function MembersStore() {
         "Integração com múltiplas corretoras",
         "Painel de controle avançado",
       ],
-      stripeLink: "https://buy.stripe.com/8wM5nQ4pF6Yp3G8dQW",
+      paymentLink: "https://buy.stripe.com/8wM5nQ4pF6Yp3G8dQW",
       notIncludedInPro: true,
     },
     {
@@ -128,7 +129,7 @@ export default function MembersStore() {
         "Suporte dedicado",
         "Atualizações semanais",
       ],
-      stripeLink: "https://buy.stripe.com/5kA6rG4pF3Fq5pK9AC",
+      paymentLink: "https://buy.stripe.com/5kA6rG4pF3Fq5pK9AC",
       notIncludedInPro: true,
     },
     {
@@ -146,7 +147,7 @@ export default function MembersStore() {
         "Limite de 200 contratos mensais",
         "Suporte básico incluído",
       ],
-      stripeLink: "#",
+      paymentLink: "#",
       notIncludedInPro: false,
       free: true,
     },
@@ -205,7 +206,7 @@ export default function MembersStore() {
         "Operações automatizadas",
         "Suporte básico",
       ],
-      stripeLink: "https://buy.stripe.com/5kA6rG4pF3Fq5pK9AC",
+      paymentLink: "https://buy.stripe.com/5kA6rG4pF3Fq5pK9AC",
       current: currentUserPack === "Pack Starter",
       canUpgrade: currentUserPack === "Free",
       canDowngrade: currentPackIndex > packHierarchy.indexOf("Pack Starter"),
@@ -226,7 +227,7 @@ export default function MembersStore() {
         "Gestão de risco integrada",
         "Suporte avançado",
       ],
-      stripeLink: "https://buy.stripe.com/cN24jT8rq4QR7Qs6oF",
+      paymentLink: "https://buy.stripe.com/cN24jT8rq4QR7Qs6oF",
       current: currentUserPack === "Pack Global",
       canUpgrade: currentUserPack === "Pack Starter",
       canDowngrade: currentPackIndex > packHierarchy.indexOf("Pack Global"),
@@ -247,7 +248,7 @@ export default function MembersStore() {
         "Backtest sem limites",
         "Suporte VIP 24/7",
       ],
-      stripeLink: "https://buy.stripe.com/6oE3cY5pF5Fq5pKcN3",
+      paymentLink: "https://buy.stripe.com/6oE3cY5pF5Fq5pKcN3",
       current: currentUserPack === "Pack PRO Quant",
       canUpgrade: currentUserPack === "Pack Global",
       canDowngrade: false,
@@ -273,7 +274,7 @@ export default function MembersStore() {
       description:
         "Agende uma consultoria personalizada com nossos especialistas para otimizar suas estratégias.",
       link: "https://profitestrategista.rds.land/demo",
-      icon: Calendar,
+      icon: CalendarIcon,
       color: "bg-green-500",
     },
   ];
@@ -402,7 +403,7 @@ export default function MembersStore() {
                         </div>
                       </div>
                       <PaymentButton
-                        priceId={robot.stripeLink}
+                        priceId={robot.paymentLink}
                         isSubscription={false}
                       >
                         Contratar
@@ -458,14 +459,14 @@ export default function MembersStore() {
                       </div>
                     ) : pack.canUpgrade ? (
                       <PaymentButton
-                        priceId={pack.stripeLink}
+                        priceId={pack.paymentLink}
                         className="w-full"
                       >
                         Fazer Upgrade
                       </PaymentButton>
                     ) : pack.canDowngrade ? (
                       <PaymentButton
-                        priceId={pack.stripeLink}
+                        priceId={pack.paymentLink}
                         className="w-full bg-gray-600 hover:bg-gray-700"
                       >
                         Fazer Downgrade

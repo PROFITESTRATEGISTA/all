@@ -7,6 +7,19 @@ import {
 } from "react";
 import { AuthUser, getCurrentUser, signIn, signOut, signUp } from "@/lib/auth";
 
+interface AppMetadata {
+  [key: string]: any;
+}
+
+interface UserMetadata {
+  first_name?: string;
+  last_name?: string;
+  is_admin?: boolean;
+  pack?: string;
+  avatar_url?: string;
+  [key: string]: any;
+}
+
 type AuthContextType = {
   user: AuthUser | null;
   loading: boolean;
@@ -89,22 +102,28 @@ export function useAuth() {
     const testUserPack =
       localStorage.getItem("testUserPack") || "Pack PRO Quant";
 
-    return {
-      user: {
-        id: "test-user-id",
-        email: testUserEmail,
-        user_metadata: {
-          first_name: isAdmin
-            ? "Pedro"
-            : localStorage.getItem("userFirstName") || "Test",
-          last_name: isAdmin
-            ? "Pardal"
-            : localStorage.getItem("userLastName") || "User",
-          is_admin: isAdmin,
-          pack: testUserPack,
-          avatar_url: localStorage.getItem("userAvatarUrl") || "",
-        },
+    const mockUser = {
+      id: "test-user-id",
+      email: testUserEmail,
+      app_metadata: {} as AppMetadata,
+      aud: "authenticated",
+      created_at: new Date().toISOString(),
+      user_metadata: {
+        // Type-safe user metadata
+        first_name: isAdmin
+          ? "Pedro"
+          : localStorage.getItem("userFirstName") || "Test",
+        last_name: isAdmin
+          ? "Pardal"
+          : localStorage.getItem("userLastName") || "User",
+        is_admin: isAdmin,
+        pack: testUserPack,
+        avatar_url: localStorage.getItem("userAvatarUrl") || "",
       },
+    };
+
+    return {
+      user: mockUser,
       loading: false,
       signIn: async (email: string, password: string) => {
         localStorage.setItem("testUserEmail", email);
